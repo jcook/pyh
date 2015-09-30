@@ -37,6 +37,7 @@ class Tag(list):
             name = 'sequence'
             self.isSeq = True
         self.id = kw.get('id', name)
+        self.raw = kw.get('raw', None)
         #self.extend(arg)
         for a in arg: self.addObj(a)
 
@@ -76,6 +77,9 @@ class Tag(list):
         result = ''
         if self.tagname:
             result = '<%s%s%s>' % (self.tagname, self.renderAtt(), self.selfClose()*' /')
+            if self.tagname == 'script' and self.raw != None:
+                result += self.raw
+
         if not self.selfClose():
             for c in self:
                 if isinstance(c, Tag):
@@ -89,7 +93,7 @@ class Tag(list):
     def renderAtt(self):
         result = ''
         for n, v in self.attributes.iteritems():
-            if n != 'txt' and n != 'open':
+            if n != 'txt' and n != 'open' and n != 'raw':
                 if n == 'cl': n = 'class'
                 result += ' %s="%s"' % (n, v)
         return result
@@ -128,6 +132,11 @@ class PyH(Tag):
             id=self.setID(obj)
             setattr(self, id, obj)
         return self
+
+    def add_raw(self, type, raw):
+        # TODO: need support raw css?
+        if type == 'script':
+            self.head += script(type='text/javascript', raw=raw)
 
     def addJS(self, *arg):
         for f in arg: self.head += script(type='text/javascript', src=f)

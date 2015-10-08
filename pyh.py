@@ -23,7 +23,12 @@ tags = ['html', 'body', 'head', 'link', 'meta', 'div', 'p', 'form', 'legend',
         'fieldset', 'a', 'title', 'body', 'head', 'title', 'script', 'br', 'table',
         'ul', 'li', 'ol']
 
-selfClose = ['input', 'img', 'link', 'br']
+selfClose = ['input', 'img', 'link', 'br', 'meta']
+
+selfDefinedAttr = {
+    'cl': 'class',
+    'httpequiv': 'http-equiv'
+}
 
 class Tag(list):
     tagname = ''
@@ -94,7 +99,8 @@ class Tag(list):
         result = ''
         for n, v in self.attributes.iteritems():
             if n != 'txt' and n != 'open' and n != 'raw':
-                if n == 'cl': n = 'class'
+                if selfDefinedAttr.has_key(n):
+                    n = selfDefinedAttr[n]
                 result += ' %s="%s"' % (n, v)
         return result
 
